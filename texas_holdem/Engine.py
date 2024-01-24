@@ -42,8 +42,9 @@ class Game(object):
         games_info['public_cards'] = []
         games_info['all_in_player'] = []
         
-        for each in self.players_name:
-            games_info['chips'][each] = games_info['buy_in']
+        if 'chips' not in games_info:
+            for each in self.players_name:
+                games_info['chips'][each] = games_info['buy_in']
         
         small_blind_name, big_blind_name    = self.players_name[:2]
         
