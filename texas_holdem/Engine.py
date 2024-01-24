@@ -93,7 +93,6 @@ class Game(object):
         logger.info('Game started, now is pre-flop')
         
     def restart(self):
-        print('restart', self.players_name)
         assert self.current_state == 'finished', 'game is not finished, cannot restart'
         self.current_state    = 'pre-flop'
         self.players_name     = self.players_name[1:] + self.players_name[:1]
@@ -129,8 +128,9 @@ class Game(object):
                 self.games_info['hand_cards'][each].append(self.cards.pop())
         
         small_blind_name, big_blind_name    = self.players_name[:2]
-        
+        self.last_player = big_blind_name
         small_blind, big_blind = self.games_info['small_blind'], self.games_info['big_blind']
+        self.max_bet = big_blind
         if self.games_info['chips'][small_blind_name] <= small_blind:
             self.games_info['bet_chip'][small_blind_name] = self.games_info['chips'][small_blind_name]
             self.games_info['chips'][small_blind_name] = 0
@@ -171,9 +171,8 @@ class Game(object):
             self.player_to_action = self.players_name[0]
         else:
             self.player_to_action = self.players_name[0]
-
-        return True
         
+        return True
         
     def actions(self, player, action):
         '''
@@ -236,7 +235,7 @@ class Game(object):
             logging.debug(str(self.games_info))
             logging.shutdown()
             return 
-            
+        
         self.current_state = 'finished'
         points = []
         for each in self.games_info['names']:
@@ -260,7 +259,7 @@ class Game(object):
             sub_pot[bet_c]['names']   = [name]
             sub_pot[bet_c]['sub_pot'] = sub_pot_c
         points.sort(key = lambda x:(x[0],-x[2]))
-
+        
         assert len(points) != 0, '1#,len(points) == 0, {}, pot:{}'.format(self.games_info,self.pot)+str(winning_player) + str(sub_pot) + str(self.players_name)
         while self.pot > 0:
             max_point = points[-1][0]
@@ -273,7 +272,6 @@ class Game(object):
             
             for name, bet_c in winning_player:
                 winning_num = len(winning_player_name)
-
                 for b in sub_pot:
                     if b <= bet_c:
                         winning_pot = math.ceil(sub_pot[b]['sub_pot']/winning_num)
@@ -312,8 +310,6 @@ class Game(object):
             self.last_player = self.games_info['names'][-1]
             self.effective_nums   = 0
             
-            
-
     def flop_round(self, player, action):
         self.actions(player, action)
         if self.effective_nums == len(self.games_info['names']) and player == self.last_player:
@@ -334,7 +330,6 @@ class Game(object):
             self.last_player = self.games_info['names'][-1]
             self.effective_nums   = 0
             
-    
     def turn_round(self, player, action):
         self.actions(player, action)
         if self.effective_nums == len(self.games_info['names']) and player == self.last_player:
@@ -369,6 +364,7 @@ class Game(object):
         logging.debug(str(self.games_info))
         logging.debug('pot: {}'.format(self.pot))
         logging.debug('Player: {} Action: {}'.format(player, action))
+        
         pre_state = self.current_state
         name_index = self.games_info['names'].index(player)
         if self.current_state == 'pre-flop':
@@ -380,7 +376,6 @@ class Game(object):
         elif self.current_state == 'river round':
             self.river_round(player,action)
         now_state = self.current_state
-        
         if now_state != 'finished':
             if len(self.games_info['names']) + len(self.games_info['all_in_player']) == 1:
                 self.finish()
@@ -394,5 +389,4 @@ class Game(object):
                         name_index += 1
                 elif name_index >= len(self.games_info['names']):
                     name_index = 0
-                print(self.games_info['names'], name_index, player)
                 self.player_to_action = self.games_info['names'][name_index]
