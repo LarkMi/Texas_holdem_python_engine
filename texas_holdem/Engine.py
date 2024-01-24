@@ -360,6 +360,7 @@ class Game(object):
     def round(self, player, action):
         
         assert player == self.player_to_action, 'Not the player that need to action, should be {}'.format(self.player_to_action)
+        assert self.current_state != 'finished', 'Game is finished, cannot action'
         
         logging.debug(str(self.games_info))
         logging.debug('pot: {}'.format(self.pot))
