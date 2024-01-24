@@ -1,7 +1,8 @@
-[project] 
+[tool.poetry]
 name = "texas_holdem"
-version = "0.0.1" 
-authors = "LarkMi"
+version = "0.1.0"
+description = "A Python library for playing Texas poker"
+authors = ["LarkMi"]
 
-[build-system] 
-requires = ["typing"]
+[tool.poetry.dependencies]
+python = "^3.8"
