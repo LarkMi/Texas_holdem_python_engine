@@ -93,7 +93,7 @@ class Game(object):
         logger.info('Game started, now is pre-flop')
         
     def restart(self):
-        
+        print('restart', self.players_name)
         assert self.current_state == 'finished', 'game is not finished, cannot restart'
         self.current_state    = 'pre-flop'
         self.players_name     = self.players_name[1:] + self.players_name[:1]
@@ -394,5 +394,5 @@ class Game(object):
                         name_index += 1
                 elif name_index >= len(self.games_info['names']):
                     name_index = 0
+                print(self.games_info['names'], name_index, player)
                 self.player_to_action = self.games_info['names'][name_index]
-        
