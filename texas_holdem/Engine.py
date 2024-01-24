@@ -37,12 +37,12 @@ class Game(object):
         self.effective_nums = 0
         
         games_info['bet_chip'] = defaultdict(int)
-        games_info['chips'] = defaultdict(int)
         games_info['card_point'] = defaultdict(int)
         games_info['public_cards'] = []
         games_info['all_in_player'] = []
         
         if 'chips' not in games_info:
+            games_info['chips'] = defaultdict(int)
             for each in self.players_name:
                 games_info['chips'][each] = games_info['buy_in']
         
