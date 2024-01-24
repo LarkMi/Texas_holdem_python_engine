@@ -4,4 +4,4 @@ version = "0.0.1"
 authors = "LarkMi"
 
 [build-system] 
-requires = ["typing", "pickle"]
+requires = ["typing"]
