@@ -15,7 +15,7 @@ games_info = {
     'names': ['player1', 'player2', 'player3', 'player4'],
     'small_blind': 10,
     'big_blind': 20,
-    'buy_in': 2000
+    'buy_in': 2000,
     'chips': {
         'player1': 1000,
         'player2': 2000,

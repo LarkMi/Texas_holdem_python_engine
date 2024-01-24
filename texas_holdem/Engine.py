@@ -80,10 +80,10 @@ class Game(object):
         
         self.last_player      = big_blind_name
         
-        if self.players_nums == 2:
+        if self.players_nums <= 2:
             self.player_to_action = self.players_name[0]
         else:
-            self.player_to_action = self.players_name[0]
+            self.player_to_action = self.players_name[2]
             
         
         logger = logging.getLogger()
@@ -167,10 +167,10 @@ class Game(object):
             self.current_state = 'finish'
             self.finish()
         
-        if self.players_nums == 2:
+        if self.players_nums <= 2:
             self.player_to_action = self.players_name[0]
         else:
-            self.player_to_action = self.players_name[0]
+            self.player_to_action = self.players_name[2]
         
         return True
         
