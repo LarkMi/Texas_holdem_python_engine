@@ -97,11 +97,13 @@ class Game(object):
         self.current_state    = 'pre-flop'
         self.players_name     = self.players_name[1:] + self.players_name[:1]
         self.players_nums     = len(self.players_name)
-        if self.players_nums <= 1:
-            return False
+
         for each in self.players_name.copy():
             if self.games_info['chips'][each] == 0:
                 self.players_name.remove(each)
+        
+        if self.players_nums <= 1:
+            return False
                 
         logging.info('Game restarted, now is pre-flop')
         
