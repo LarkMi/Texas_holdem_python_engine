@@ -96,14 +96,14 @@ class Game(object):
         assert self.current_state == 'finished', 'game is not finished, cannot restart'
         self.current_state    = 'pre-flop'
         self.players_name     = self.players_name[1:] + self.players_name[:1]
+        self.players_nums     = len(self.players_name)
+        if self.players_nums <= 1:
+            return False
         for each in self.players_name.copy():
             if self.games_info['chips'][each] == 0:
                 self.players_name.remove(each)
                 
-        self.players_nums   = len(self.players_name)
         logging.info('Game restarted, now is pre-flop')
-        if self.players_nums <= 1:
-            return False
         
         self.cards = [(i,j) for j in range(1,5) for i in range(2,15)] # (size, decor)
         
@@ -125,7 +125,6 @@ class Game(object):
             for each in self.players_name:
                 self.games_info['hand_cards'][each].append(self.cards.pop())
         
-        
         small_blind_name, big_blind_name    = self.players_name[:2]
         
         small_blind, big_blind = self.games_info['small_blind'], self.games_info['big_blind']
@@ -134,7 +133,7 @@ class Game(object):
             self.games_info['chips'][small_blind_name] = 0
             self.pot += self.games_info['bet_chip'][small_blind_name]
             self.games_info['names'].remove(small_blind_name)
-            self.games_info['public_cards'].append(small_blind_name)
+            self.games_info['all_in_player'].append(small_blind_name)
         else:
             self.pot += small_blind
             self.games_info['bet_chip'][small_blind_name] = small_blind
@@ -145,7 +144,7 @@ class Game(object):
             self.games_info['chips'][big_blind_name] = 0
             self.pot += self.games_info['bet_chip'][big_blind_name]
             self.games_info['names'].remove(big_blind_name)
-            self.games_info['public_cards'].append(big_blind_name)
+            self.games_info['all_in_player'].append(big_blind_name)
         else:
             self.pot += big_blind
             self.games_info['bet_chip'][big_blind_name] = big_blind
@@ -154,7 +153,9 @@ class Game(object):
         self.players_nums = len(self.games_info['names'])
         if self.players_nums <= 1:
             self.cards.pop()
-            self.games_info['public_cards'].extend([self.cards.pop() for _ in range(3)])
+            self.games_info['public_cards'].append(self.cards.pop())
+            self.games_info['public_cards'].append(self.cards.pop())
+            self.games_info['public_cards'].append(self.cards.pop())
             self.cards.pop()
             self.games_info['public_cards'].append(self.cards.pop())
             self.cards.pop()
