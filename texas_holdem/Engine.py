@@ -10,11 +10,12 @@ class Games_info(TypedDict):
     names: list[str]
     small_blind   : int
     big_blind     : int
-    chips         : dict
-    bet_chip      : dict
-    public_cards  : list
-    all_in_player : list
-    card_point    : dict
+    buy_in        : int
+    #chips         : dict
+    #bet_chip      : dict
+    #public_cards  : list
+    #all_in_player : list
+    #card_point    : dict
 
 class Game(object):
     
@@ -25,19 +26,24 @@ class Game(object):
                 names         : list
                 small_blind   : int
                 big_blind     : int
-                chips         : {name: chip}
-                bet_chip      : {name: chip}
-                public_cards  : list
-                all_in_player : list
-                card_point    : {name: card_point}
+                buy_in        : int
         judge : Judge
         '''
         
         self.judge = judge
-        self.players_name         = games_info['names']
-        self.players_nums         = len(self.players_name)
-        self.effective_nums       = 0
+        self.players_name   = games_info['names'].copy()
+        self.players_nums   = len(self.players_name)
+        assert self.players_nums >= 2 and self.players_nums <= 8, 'players_nums must be in range [2,8]'
+        self.effective_nums = 0
         
+        games_info['bet_chip'] = defaultdict(int)
+        games_info['chips'] = defaultdict(int)
+        games_info['card_point'] = defaultdict(int)
+        games_info['public_cards'] = []
+        games_info['all_in_player'] = []
+        
+        for each in self.players_name:
+            games_info['chips'][each] = games_info['buy_in']
         
         small_blind_name, big_blind_name    = self.players_name[:2]
         
@@ -54,9 +60,12 @@ class Game(object):
         games_info['chips'][big_blind_name]      -= big_blind
         
         self.cards = [(i,j) for j in range(1,5) for i in range(2,15)] # (size, decor)
+        
         random.shuffle(self.cards)
         random.shuffle(self.cards)
         random.shuffle(self.cards)
+        random.shuffle(self.cards)
+
         hand_cards = defaultdict(list)
         for _ in range(2):
             for each in self.players_name:
@@ -64,18 +73,103 @@ class Game(object):
         
         games_info['hand_cards'] = hand_cards
         
-        self.games_info = games_info
+        self.games_info       = games_info
         
-        self.current_state = 'pre-flop'
+        self.current_state    = 'pre-flop'
         
-        self.last_player = big_blind_name
+        self.last_player      = big_blind_name
         
+        if self.players_nums == 2:
+            self.player_to_action = self.players_name[0]
+        else:
+            self.player_to_action = self.players_name[0]
+            
         
         logger = logging.getLogger()
         logger.setLevel(logging_level)
         if log_filename != None:
             logger.addHandler(logging.FileHandler(log_filename, mode='w'))
         logger.info('Game started, now is pre-flop')
+        
+    def restart(self):
+        
+        assert self.current_state == 'finished', 'game is not finished, cannot restart'
+        self.current_state    = 'pre-flop'
+        self.players_name     = self.players_name[1:] + self.players_name[:1]
+        for each in self.players_name.copy():
+            if self.games_info['chips'][each] == 0:
+                self.players_name.remove(each)
+                
+        self.players_nums   = len(self.players_name)
+        logging.info('Game restarted, now is pre-flop')
+        if self.players_nums <= 1:
+            return False
+        
+        self.cards = [(i,j) for j in range(1,5) for i in range(2,15)] # (size, decor)
+        
+        random.shuffle(self.cards)
+        random.shuffle(self.cards)
+        random.shuffle(self.cards)
+        random.shuffle(self.cards)
+        
+        self.games_info['names'] = self.players_name.copy()
+        self.games_info['hand_cards'] = defaultdict(list)
+        self.games_info['bet_chip'] = defaultdict(int)
+        self.games_info['card_point'] = defaultdict(int)
+        self.games_info['public_cards'] = []
+        self.games_info['all_in_player'] = []
+        
+        self.pot = 0
+        
+        for _ in range(2):
+            for each in self.players_name:
+                self.games_info['hand_cards'][each].append(self.cards.pop())
+        
+        
+        small_blind_name, big_blind_name    = self.players_name[:2]
+        
+        small_blind, big_blind = self.games_info['small_blind'], self.games_info['big_blind']
+        if self.games_info['chips'][small_blind_name] <= small_blind:
+            self.games_info['bet_chip'][small_blind_name] = self.games_info['chips'][small_blind_name]
+            self.games_info['chips'][small_blind_name] = 0
+            self.pot += self.games_info['bet_chip'][small_blind_name]
+            self.games_info['names'].remove(small_blind_name)
+            self.games_info['public_cards'].append(small_blind_name)
+        else:
+            self.pot += small_blind
+            self.games_info['bet_chip'][small_blind_name] = small_blind
+            self.games_info['chips'][small_blind_name] -= small_blind
+            
+        if self.games_info['chips'][big_blind_name] <= big_blind:
+            self.games_info['bet_chip'][big_blind_name] = self.games_info['chips'][big_blind_name]
+            self.games_info['chips'][big_blind_name] = 0
+            self.pot += self.games_info['bet_chip'][big_blind_name]
+            self.games_info['names'].remove(big_blind_name)
+            self.games_info['public_cards'].append(big_blind_name)
+        else:
+            self.pot += big_blind
+            self.games_info['bet_chip'][big_blind_name] = big_blind
+            self.games_info['chips'][big_blind_name] -= big_blind
+        
+        self.players_nums = len(self.games_info['names'])
+        if self.players_nums <= 1:
+            self.cards.pop()
+            self.games_info['public_cards'].extend([self.cards.pop() for _ in range(3)])
+            self.cards.pop()
+            self.games_info['public_cards'].append(self.cards.pop())
+            self.cards.pop()
+            self.games_info['public_cards'].append(self.cards.pop())
+            
+            self.current_state = 'finish'
+            self.finish()
+        
+        if self.players_nums == 2:
+            self.player_to_action = self.players_name[0]
+        else:
+            self.player_to_action = self.players_name[0]
+
+        return True
+        
         
     def actions(self, player, action):
         '''
@@ -264,9 +358,14 @@ class Game(object):
             self.finish()
     
     def round(self, player, action):
+        
+        assert player == self.player_to_action, 'Not the player that need to action, should be {}'.format(self.player_to_action)
+        
         logging.debug(str(self.games_info))
         logging.debug('pot: {}'.format(self.pot))
         logging.debug('Player: {} Action: {}'.format(player, action))
+        pre_state = self.current_state
+        name_index = self.games_info['names'].index(player)
         if self.current_state == 'pre-flop':
             self.pre_flop(player,action)
         elif self.current_state == 'flop round':
@@ -275,6 +374,19 @@ class Game(object):
             self.turn_round(player,action)
         elif self.current_state == 'river round':
             self.river_round(player,action)
+        now_state = self.current_state
+        
+        if pre_state != now_state:
+            self.player_to_action = self.games_info['names'][0]
+        else:
+            if player in self.games_info['names']:
+                if name_index == len(self.games_info['names']) - 1:
+                    name_index = 0
+                else:
+                    name_index += 1
+            elif name_index >= len(self.games_info['names']):
+                name_index = 0
+            self.player_to_action = self.games_info['names'][name_index]
         
         if self.current_state != 'finished':
             if len(self.games_info['names']) + len(self.games_info['all_in_player']) == 1:
