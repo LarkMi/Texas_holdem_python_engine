@@ -381,19 +381,18 @@ class Game(object):
             self.river_round(player,action)
         now_state = self.current_state
         
-        if pre_state != now_state:
-            self.player_to_action = self.games_info['names'][0]
-        else:
-            if player in self.games_info['names']:
-                if name_index == len(self.games_info['names']) - 1:
-                    name_index = 0
-                else:
-                    name_index += 1
-            elif name_index >= len(self.games_info['names']):
-                name_index = 0
-            self.player_to_action = self.games_info['names'][name_index]
-        
-        if self.current_state != 'finished':
+        if now_state != 'finished':
             if len(self.games_info['names']) + len(self.games_info['all_in_player']) == 1:
                 self.finish()
+            if pre_state != now_state:
+                self.player_to_action = self.games_info['names'][0]
+            else:
+                if player in self.games_info['names']:
+                    if name_index == len(self.games_info['names']) - 1:
+                        name_index = 0
+                    else:
+                        name_index += 1
+                elif name_index >= len(self.games_info['names']):
+                    name_index = 0
+                self.player_to_action = self.games_info['names'][name_index]
         
