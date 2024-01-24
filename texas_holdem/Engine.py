@@ -3,7 +3,7 @@ from collections import defaultdict
 import math
 import logging
 from typing import TypedDict
-from Judge import Judge
+from .Judge import Judge
 
 
 class Games_info(TypedDict):
