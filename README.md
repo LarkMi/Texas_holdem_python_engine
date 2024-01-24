@@ -12,7 +12,7 @@ Then
 from texas_holdem import Game
 
 games_info = {
-    'names': ['player1', 'player2', 'player3', 'player4']
+    'names': ['player1', 'player2', 'player3', 'player4'],
     'small_blind': 10,
     'big_blind': 20,
     'buy_in': 2000
