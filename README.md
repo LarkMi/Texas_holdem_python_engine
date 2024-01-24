@@ -3,12 +3,12 @@ This is a Python library for playing Texas poker
 
 # How to start
 First is to install the library by running the following command in the terminal:
-"""
+'''
 pip install git+https://github.com/LarkMi/Texas_holdem_python_engine.git
-"""
+'''
 Then
 
-"""
+'''
 from texas_holdem import Game
 
 games_info = {
@@ -39,5 +39,4 @@ while game.current_state != 'finished':
 
 # Restart game
 game.restart()
-
-"""
+'''
