@@ -167,9 +167,9 @@ class Game(object):
             self.finish()
         
         if self.players_nums <= 2:
-            self.player_to_action = self.players_name[0]
+            self.player_to_action = self.games_info['names'][0]
         else:
-            self.player_to_action = self.players_name[2]
+            self.player_to_action = self.games_info['names'][2]
         
         return True
         
