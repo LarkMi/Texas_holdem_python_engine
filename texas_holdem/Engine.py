@@ -96,12 +96,11 @@ class Game(object):
         assert self.current_state == 'finished', 'game is not finished, cannot restart'
         self.current_state    = 'pre-flop'
         self.players_name     = self.players_name[1:] + self.players_name[:1]
-        self.players_nums     = len(self.players_name)
 
         for each in self.players_name.copy():
             if self.games_info['chips'][each] == 0:
                 self.players_name.remove(each)
-        
+        self.players_nums     = len(self.players_name)
         if self.players_nums <= 1:
             return False
                 
