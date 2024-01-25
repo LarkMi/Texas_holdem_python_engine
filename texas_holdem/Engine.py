@@ -285,7 +285,6 @@ class Game(object):
             if len(points) == 0:
                 self.pot = 0
         
-        self.wining_info = defaultdict(int)
         logging.debug(str(self.games_info))
         logging.shutdown()
     

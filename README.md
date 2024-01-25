@@ -40,3 +40,76 @@ while game.current_state != 'finished':
 # Restart game
 game.restart()
 ```
+# Explanation
+<table>
+  <tr>
+    <td colspan="3">Game.games_info</td>
+  </tr>
+  <tr>
+    <td>names</td>
+    <td>参与游戏的玩家姓名</td>
+    <td>list[str]</td>
+  </tr>
+  <tr>
+    <td>small_blind</td>
+    <td>小盲注</td>
+    <td>int</td>
+  </tr>
+  <tr>
+    <td>big_blind</td>
+    <td>大盲注</td>
+    <td>int</td>
+  </tr>
+  <tr>
+    <td>buy_in</td>
+    <td>买入筹码量</td>
+    <td>int</td>
+  </tr>
+  <tr>
+    <td>chips</td>
+    <td>玩家现有的筹码量</td>
+    <td>dict[str:int]</td>
+  </tr>
+  <tr>
+    <td>bet_chip</td>
+    <td>玩家已下注的筹码量</td>
+    <td>dict[str:int]</td>
+  </tr>
+  <tr>
+    <td>public_cards</td>
+    <td>公告牌</td>
+    <td>list[(size, decor)]</td>
+  </tr>
+  <tr>
+    <td>hand_cards</td>
+    <td>玩家的手牌</td>
+    <td>dict[str:list[(size, decor)]]</td>
+  </tr>
+  <tr>
+    <td>all_in_player</td>
+    <td>已all in的玩家姓名</td>
+    <td>list[str]</td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <td colspan="2">Game</td>
+  </tr>
+  <tr>
+    <td>max_bet</td>
+    <td>最大下注量</td>
+  </tr>
+  <tr>
+    <td>pot</td>
+    <td>底池筹码量</td>
+  </tr>
+  <tr>
+    <td>current_state</td>
+    <td>目前的游戏状态</td>
+  </tr>
+  <tr>
+    <td>player_to_action</td>
+    <td>需要进行行动的玩家姓名</td>
+  </tr>
+</table>
