@@ -184,6 +184,8 @@ class Game(object):
         betted_chip, chip = self.games_info['bet_chip'][player], self.games_info['chips'][player]
         
         need_to_call = min(self.max_bet - betted_chip, chip)
+        if action == 'call':
+            action = need_to_call
         
         names = self.games_info['names'][:]
         
